@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ScreenshoterJar.iml" filepath="$PROJECT_DIR$/ScreenshoterJar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ScreenshoterLib/ScreenshoterLib.iml" filepath="$PROJECT_DIR$/ScreenshoterLib/ScreenshoterLib.iml" />
     </modules>
   </component>
 </project>
