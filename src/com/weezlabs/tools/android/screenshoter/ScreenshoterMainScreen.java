@@ -29,7 +29,7 @@ public class ScreenshoterMainScreen {
 	private JPanel ScreenshoterRootPanel;
 	private JTextArea titleTextArea;
 	private JComboBox devicesComboBox;
-	private JTextField screenshotsTextField;
+	private JTextField directoryTextField;
 	private JButton startButton;
 	private JButton cancelButton;
 	private JButton resetButton;
@@ -39,6 +39,7 @@ public class ScreenshoterMainScreen {
 	private JTextArea deviceParamsTextArea;
 
 	public ScreenshoterMainScreen() {
+		// TODO: add devices listener
 		ScreenShooterManager.getInstanceAsync(new ScreenShooterManager.ManagerInitListener() {
 			@Override
 			public void onManagerReady(ScreenShooterManager manager) {
@@ -63,6 +64,11 @@ public class ScreenshoterMainScreen {
 				}
 			}
 		});
+
+		directoryTextField.setText(ScreenShooterManager.DEFAULT_SCREENSHOTS_DIR);
+		prefixTextField.setText(ScreenShooterManager.DEFAULT_SCREENSHOTS_PREFIX);
+		sleepTextField.setText(String.valueOf(ScreenShooterManager.DEFAULT_SLEEP_TIME_MS));
+		// TODO: add integer filter to sleep text field
 	}
 
 	public static void main(String[] args) {

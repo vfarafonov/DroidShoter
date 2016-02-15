@@ -1,34 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.weezlabs.tools.android.screenshoter.ScreenshoterMainScreen">
-  <grid id="27dc6" binding="ScreenshoterRootPanel" layout-manager="GridLayoutManager" row-count="9" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="ScreenshoterRootPanel" layout-manager="GridLayoutManager" row-count="9" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
       <xy x="20" y="20" width="548" height="400"/>
     </constraints>
     <properties>
       <enabled value="true"/>
+      <minimumSize width="350" height="313"/>
     </properties>
     <border type="none"/>
     <children>
       <vspacer id="dadf0">
         <constraints>
-          <grid row="8" column="0" row-span="1" col-span="4" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="8" column="0" row-span="1" col-span="2" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
         </constraints>
       </vspacer>
       <component id="c3faf" class="javax.swing.JTextArea" binding="titleTextArea">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="4" vsize-policy="2" hsize-policy="2" anchor="1" fill="0" indent="1" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="2" hsize-policy="2" anchor="1" fill="0" indent="1" use-parent-layout="false"/>
         </constraints>
         <properties>
           <editable value="false"/>
           <font swing-font="DesktopIcon.font"/>
+          <margin top="5" left="0" bottom="10" right="0"/>
           <opaque value="false"/>
           <text value="ScreenShoter"/>
         </properties>
       </component>
       <component id="695ea" class="javax.swing.JTextArea" binding="deviceParamsTextArea">
         <constraints>
-          <grid row="2" column="0" row-span="1" col-span="3" vsize-policy="2" hsize-policy="2" anchor="1" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="2" hsize-policy="2" anchor="1" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <opaque value="false"/>
@@ -39,7 +41,7 @@
       <grid id="79304" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="4" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -67,12 +69,13 @@
       </grid>
       <component id="904a4" class="javax.swing.JTextArea">
         <constraints>
-          <grid row="3" column="0" row-span="1" col-span="4" vsize-policy="2" hsize-policy="2" anchor="8" fill="0" indent="1" use-parent-layout="false">
+          <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="2" hsize-policy="2" anchor="8" fill="0" indent="1" use-parent-layout="false">
             <preferred-size width="138" height="17"/>
           </grid>
         </constraints>
         <properties>
           <editable value="false"/>
+          <margin top="10" left="0" bottom="0" right="0"/>
           <opaque value="false"/>
           <text value="2. Set up params"/>
         </properties>
@@ -80,7 +83,7 @@
       <grid id="4f85b" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="4" column="0" row-span="1" col-span="4" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -97,7 +100,7 @@
               <text value="Output directory"/>
             </properties>
           </component>
-          <component id="48409" class="javax.swing.JTextField" binding="screenshotsTextField" default-binding="true">
+          <component id="48409" class="javax.swing.JTextField" binding="directoryTextField">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -113,7 +116,7 @@
       <grid id="dfd9a" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="5" column="0" row-span="1" col-span="4" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="5" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -146,7 +149,7 @@
       <grid id="18ff0" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="6" column="0" row-span="1" col-span="4" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -176,42 +179,52 @@
           </component>
         </children>
       </grid>
-      <component id="11d2d" class="javax.swing.JButton" binding="startButton">
-        <constraints>
-          <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <enabled value="false"/>
-          <text value="Start!"/>
-        </properties>
-      </component>
-      <component id="240aa" class="javax.swing.JButton" binding="cancelButton">
-        <constraints>
-          <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <enabled value="false"/>
-          <text value="Cancel"/>
-        </properties>
-      </component>
-      <component id="ffd75" class="javax.swing.JButton" binding="resetButton">
-        <constraints>
-          <grid row="7" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <enabled value="false"/>
-          <text value="Reset display"/>
-        </properties>
-      </component>
       <component id="f5201" class="javax.swing.JProgressBar" binding="deviceInfoProgressBar">
         <constraints>
-          <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <indeterminate value="true"/>
           <visible value="true"/>
         </properties>
       </component>
+      <grid id="9c2fa" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="16" left="0" bottom="10" right="0"/>
+        <constraints>
+          <grid row="7" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="11d2d" class="javax.swing.JButton" binding="startButton">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <enabled value="false"/>
+              <text value="Start!"/>
+            </properties>
+          </component>
+          <component id="240aa" class="javax.swing.JButton" binding="cancelButton">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <enabled value="false"/>
+              <text value="Cancel"/>
+            </properties>
+          </component>
+          <component id="ffd75" class="javax.swing.JButton" binding="resetButton">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <enabled value="false"/>
+              <text value="Reset display"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
     </children>
   </grid>
 </form>
