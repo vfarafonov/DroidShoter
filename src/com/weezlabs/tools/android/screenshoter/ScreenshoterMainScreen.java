@@ -6,8 +6,11 @@ import com.weezlabs.libs.screenshoter.Model.Device;
 import com.weezlabs.libs.screenshoter.ScreenShooterManager;
 import com.weezlabs.tools.android.screenshoter.ui.DevicesListRenderer;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -49,6 +52,8 @@ public class ScreenshoterMainScreen {
 				devicesListRenderer_.setAdbConnected_(true);
 				deviceInfoProgressBar.setVisible(false);
 				if (devices.length > 0) {
+					screenShooterManager_.setDevice(new Device((IDevice) devicesComboBox.getSelectedItem()));
+					resetButton.setEnabled(true);
 					getSelectedDeviceInfo();
 				}
 			}
@@ -69,6 +74,78 @@ public class ScreenshoterMainScreen {
 		prefixTextField.setText(ScreenShooterManager.DEFAULT_SCREENSHOTS_PREFIX);
 		sleepTextField.setText(String.valueOf(ScreenShooterManager.DEFAULT_SLEEP_TIME_MS));
 		// TODO: add integer filter to sleep text field
+		startButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (screenShooterManager_ != null){
+					switchUIForJobInProgress(true);
+					screenShooterManager_.createScreenshotsForAllResolutionsAsync(
+							new File(directoryTextField.getText()),
+							prefixTextField.getText(),
+							Integer.valueOf(sleepTextField.getText()),
+							new ScreenShooterManager.ScreenShotJobProgressListener() {
+								@Override
+								public void onScreenshotJobFinished() {
+									System.out.println("Screen job finished");
+									switchUIForJobInProgress(false);
+									resetDeviceDisplay();
+								}
+
+								@Override
+								public void onScreenshotJobFailed() {
+									System.out.println("Screen job failed");
+									switchUIForJobInProgress(false);
+									resetDeviceDisplay();
+								}
+
+								@Override
+								public void onScreenshotJobCancelled() {
+									System.out.println("Screen job cancelled");
+									switchUIForJobInProgress(false);
+									resetDeviceDisplay();
+								}
+							}
+					);
+				}
+			}
+		});
+		cancelButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("cancel clicked");
+				cancelButton.setEnabled(false);
+				screenShooterManager_.stopScreenshotsJob();
+			}
+		});
+		resetButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				resetDeviceDisplay();
+			}
+		});
+	}
+
+	private void switchUIForJobInProgress(boolean isInProgress) {
+		startButton.setEnabled(!isInProgress);
+		cancelButton.setEnabled(isInProgress);
+		resetButton.setEnabled(!isInProgress);
+	}
+
+	private void resetDeviceDisplay() {
+		resetButton.setEnabled(false);
+		screenShooterManager_.resetDeviceDisplayAsync(new ScreenShooterManager.CommandStatusListener() {
+			@Override
+			public void onCommandSentToDevice() {
+				System.out.println("reset finished");
+				resetButton.setEnabled(true);
+			}
+
+			@Override
+			public void onCommandExecutionFailed() {
+				System.out.println("reset failed");
+				resetButton.setEnabled(true);
+			}
+		});
 	}
 
 	public static void main(String[] args) {
@@ -93,6 +170,7 @@ public class ScreenshoterMainScreen {
 		ScreenShooterManager.getDeviceDisplayInfoAsync(iDevice, new ScreenShooterManager.DeviceInfoListener() {
 			@Override
 			public void onDeviceInfoUpdated(Device device) {
+				screenShooterManager_.setDevice(device);
 				deviceParamsTextArea.setText(device.getCurrentResolution().toString() + ", " + device.getCurrentDpi().toString());
 				deviceInfoProgressBar.setVisible(false);
 				deviceParamsTextArea.setVisible(true);
