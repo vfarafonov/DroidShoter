@@ -6,6 +6,9 @@ import com.weezlabs.libs.screenshoter.Model.Device;
 import com.weezlabs.libs.screenshoter.ScreenShooterManager;
 import com.weezlabs.tools.android.screenshoter.ui.DevicesListRenderer;
 
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -52,6 +55,14 @@ public class ScreenshoterMainScreen {
 		devicesListRenderer_ = new DevicesListRenderer();
 		devicesComboBox.setRenderer(devicesListRenderer_);
 		devicesComboBox.setMaximumRowCount(MAX_DEVICES_ROW_COUNT);
+		devicesComboBox.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					getDeviceInfo((IDevice) e.getItem());
+				}
+			}
+		});
 	}
 
 	public static void main(String[] args) {
@@ -70,6 +81,7 @@ public class ScreenshoterMainScreen {
 	}
 
 	private void getDeviceInfo(@NonNull IDevice iDevice) {
+		devicesComboBox.setEnabled(false);
 		deviceParamsTextArea.setVisible(false);
 		deviceInfoProgressBar.setVisible(true);
 		ScreenShooterManager.getDeviceDisplayInfoAsync(iDevice, new ScreenShooterManager.DeviceInfoListener() {
@@ -81,6 +93,8 @@ public class ScreenshoterMainScreen {
 
 				startButton.setEnabled(true);
 				resetButton.setEnabled(true);
+
+				devicesComboBox.setEnabled(true);
 			}
 
 			@Override
@@ -88,6 +102,7 @@ public class ScreenshoterMainScreen {
 				deviceParamsTextArea.setText("Failed to get device parameters");
 				deviceInfoProgressBar.setVisible(false);
 				deviceParamsTextArea.setVisible(true);
+				devicesComboBox.setEnabled(true);
 			}
 		});
 	}
