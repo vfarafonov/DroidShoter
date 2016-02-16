@@ -2,9 +2,11 @@ package com.weezlabs.tools.android.screenshoter;
 
 import com.android.ddmlib.IDevice;
 import com.sun.javafx.beans.annotations.NonNull;
-import com.weezlabs.libs.screenshoter.Model.Device;
 import com.weezlabs.libs.screenshoter.ScreenShooterManager;
+import com.weezlabs.libs.screenshoter.model.Device;
+import com.weezlabs.libs.screenshoter.model.Mode;
 import com.weezlabs.tools.android.screenshoter.ui.DevicesListRenderer;
+import com.weezlabs.tools.android.screenshoter.ui.ModesTableModel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +20,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -27,6 +30,7 @@ import javax.swing.JTextField;
 public class ScreenshoterMainScreen {
 	public static final int MAX_DEVICES_ROW_COUNT = 10;
 	private final DevicesListRenderer devicesListRenderer_;
+	private final ModesTableModel modesTableModel_;
 
 	private ScreenShooterManager screenShooterManager_;
 	private JPanel ScreenshoterRootPanel;
@@ -40,6 +44,7 @@ public class ScreenshoterMainScreen {
 	private JTextField prefixTextField;
 	private JTextField sleepTextField;
 	private JTextArea deviceParamsTextArea;
+	private JTable modesTable;
 	private MainScreenStates currentState_;
 
 	public ScreenshoterMainScreen() {
@@ -80,6 +85,10 @@ public class ScreenshoterMainScreen {
 		prefixTextField.setText(ScreenShooterManager.DEFAULT_SCREENSHOTS_PREFIX);
 		sleepTextField.setText(String.valueOf(ScreenShooterManager.DEFAULT_SLEEP_TIME_MS));
 		// TODO: add integer filter to sleep text field
+
+		modesTableModel_ = new ModesTableModel();
+		modesTable.setModel(modesTableModel_);
+
 		startButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -89,6 +98,7 @@ public class ScreenshoterMainScreen {
 							new File(directoryTextField.getText()),
 							prefixTextField.getText(),
 							Integer.valueOf(sleepTextField.getText()),
+							modesTableModel_.getExcludedModes(),
 							new ScreenShooterManager.ScreenShotJobProgressListener() {
 								@Override
 								public void onScreenshotJobFinished() {
@@ -132,12 +142,6 @@ public class ScreenshoterMainScreen {
 		frame.setVisible(true);
 	}
 
-	private void switchUIForJobInProgress(boolean isInProgress) {
-		startButton.setEnabled(!isInProgress);
-		cancelButton.setEnabled(isInProgress);
-		resetButton.setEnabled(!isInProgress);
-	}
-
 	private void resetDeviceDisplay() {
 		setState(MainScreenStates.RESETTING);
 		screenShooterManager_.resetDeviceDisplayAsync(new ScreenShooterManager.CommandStatusListener() {
@@ -166,6 +170,8 @@ public class ScreenshoterMainScreen {
 			public void onDeviceInfoUpdated(Device device) {
 				screenShooterManager_.setDevice(device);
 				deviceParamsTextArea.setText(device.getCurrentResolution().toString() + ", " + device.getCurrentDpi().toString());
+				modesTableModel_.clearRows();
+				modesTableModel_.addAll(Mode.getModesQueue(device));
 				setState(checkGlobalState());
 			}
 
@@ -204,6 +210,7 @@ public class ScreenshoterMainScreen {
 				startButton.setEnabled(false);
 				cancelButton.setEnabled(false);
 				resetButton.setEnabled(false);
+				modesTableModel_.clearRows();
 				devicesComboBox.setEnabled(false);
 				deviceParamsTextArea.setVisible(true);
 				deviceInfoProgressBar.setVisible(false);
@@ -212,6 +219,7 @@ public class ScreenshoterMainScreen {
 				startButton.setEnabled(false);
 				cancelButton.setEnabled(false);
 				resetButton.setEnabled(true);
+				modesTableModel_.clearRows();
 				devicesComboBox.setEnabled(false);
 				deviceParamsTextArea.setVisible(false);
 				deviceInfoProgressBar.setVisible(true);
