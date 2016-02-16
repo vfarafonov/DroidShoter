@@ -34,14 +34,16 @@ public class ModesTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		Mode mode = values_.get(rowIndex);
-		switch (columnIndex) {
-			case 0:
-				return mode.getResolution().toString();
-			case 1:
-				return mode.getDensity().toString();
-			case 2:
-				return mode.isActivated();
+		if (rowIndex < values_.size()) {
+			Mode mode = values_.get(rowIndex);
+			switch (columnIndex) {
+				case 0:
+					return mode.getResolution().toString();
+				case 1:
+					return mode.getDensity().toString();
+				case 2:
+					return mode.isActivated();
+			}
 		}
 		return null;
 	}

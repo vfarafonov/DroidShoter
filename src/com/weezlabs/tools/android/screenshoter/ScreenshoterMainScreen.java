@@ -1,5 +1,6 @@
 package com.weezlabs.tools.android.screenshoter;
 
+import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
 import com.sun.javafx.beans.annotations.NonNull;
 import com.weezlabs.libs.screenshoter.ScreenShooterManager;
@@ -45,6 +46,7 @@ public class ScreenshoterMainScreen {
 	private JTextField sleepTextField;
 	private JTextArea deviceParamsTextArea;
 	private JTable modesTable;
+	private JProgressBar jobProgressBar;
 	private MainScreenStates currentState_;
 
 	public ScreenshoterMainScreen() {
@@ -55,16 +57,37 @@ public class ScreenshoterMainScreen {
 			public void onManagerReady(ScreenShooterManager manager) {
 				screenShooterManager_ = manager;
 				IDevice[] devices = screenShooterManager_.getDevices();
-				devicesComboBox.setModel(new DefaultComboBoxModel<IDevice>(devices));
+				final DefaultComboBoxModel<IDevice> devicesComboBoxModel = new DefaultComboBoxModel<IDevice>(devices);
+				devicesComboBox.setModel(devicesComboBoxModel);
 				devicesListRenderer_.setAdbConnected_(true);
 				deviceInfoProgressBar.setVisible(false);
 				if (devices.length > 0) {
 					setState(MainScreenStates.REQUESTING_INFO);
-					screenShooterManager_.setDevice(new Device((IDevice) devicesComboBox.getSelectedItem()));
 					getSelectedDeviceInfo();
 				} else {
 					setState(MainScreenStates.DEVICE_NOT_FOUND);
 				}
+				screenShooterManager_.addDeviceChangeListener(new AndroidDebugBridge.IDeviceChangeListener() {
+					@Override
+					public void deviceConnected(IDevice iDevice) {
+					}
+
+					@Override
+					public void deviceDisconnected(IDevice iDevice) {
+						devicesComboBoxModel.removeElement(iDevice);
+						setState(checkGlobalState());
+					}
+
+					@Override
+					public void deviceChanged(IDevice iDevice, int i) {
+						if (iDevice.getState() == IDevice.DeviceState.ONLINE) {
+							devicesComboBoxModel.addElement(iDevice);
+						} else {
+							devicesComboBoxModel.removeElement(iDevice);
+						}
+						setState(checkGlobalState());
+					}
+				});
 			}
 		});
 		devicesListRenderer_ = new DevicesListRenderer();
@@ -93,6 +116,7 @@ public class ScreenshoterMainScreen {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (screenShooterManager_ != null) {
+					updateProgress(0, 0);
 					setState(MainScreenStates.JOB_IN_PROGRESS);
 					screenShooterManager_.createScreenshotsForAllResolutionsAsync(
 							new File(directoryTextField.getText()),
@@ -113,6 +137,11 @@ public class ScreenshoterMainScreen {
 								@Override
 								public void onScreenshotJobCancelled() {
 									resetDeviceDisplay();
+								}
+
+								@Override
+								public void onScreenshotJobProgressUpdate(int currentProgress, int totalCount) {
+									updateProgress(currentProgress, totalCount);
 								}
 							}
 					);
@@ -142,6 +171,16 @@ public class ScreenshoterMainScreen {
 		frame.setVisible(true);
 	}
 
+	/**
+	 * Updates progress bar. Resets it if totalCount = 0
+	 */
+	private void updateProgress(int currentProgress, int totalCount) {
+		jobProgressBar.setMaximum(totalCount);
+		jobProgressBar.setValue(totalCount != 0 ? currentProgress : jobProgressBar.getMinimum());
+		jobProgressBar.setString(totalCount != 0 ? currentProgress + "/" + totalCount : "");
+		jobProgressBar.setIndeterminate(totalCount == 0);
+	}
+
 	private void resetDeviceDisplay() {
 		setState(MainScreenStates.RESETTING);
 		screenShooterManager_.resetDeviceDisplayAsync(new ScreenShooterManager.CommandStatusListener() {
@@ -159,6 +198,7 @@ public class ScreenshoterMainScreen {
 
 	private void getSelectedDeviceInfo() {
 		IDevice iDevice = (IDevice) devicesComboBox.getSelectedItem();
+		screenShooterManager_.setDevice(new Device(iDevice));
 		if (iDevice != null) {
 			getDeviceInfo(iDevice);
 		}
@@ -202,6 +242,7 @@ public class ScreenshoterMainScreen {
 				startButton.setEnabled(false);
 				cancelButton.setEnabled(false);
 				resetButton.setEnabled(false);
+				jobProgressBar.setVisible(false);
 				devicesComboBox.setEnabled(false);
 				deviceParamsTextArea.setVisible(false);
 				deviceInfoProgressBar.setVisible(true);
@@ -211,8 +252,9 @@ public class ScreenshoterMainScreen {
 				cancelButton.setEnabled(false);
 				resetButton.setEnabled(false);
 				modesTableModel_.clearRows();
+				jobProgressBar.setVisible(false);
 				devicesComboBox.setEnabled(false);
-				deviceParamsTextArea.setVisible(true);
+				deviceParamsTextArea.setVisible(false);
 				deviceInfoProgressBar.setVisible(false);
 				break;
 			case REQUESTING_INFO:
@@ -220,6 +262,7 @@ public class ScreenshoterMainScreen {
 				cancelButton.setEnabled(false);
 				resetButton.setEnabled(true);
 				modesTableModel_.clearRows();
+				jobProgressBar.setVisible(false);
 				devicesComboBox.setEnabled(false);
 				deviceParamsTextArea.setVisible(false);
 				deviceInfoProgressBar.setVisible(true);
@@ -228,6 +271,7 @@ public class ScreenshoterMainScreen {
 				startButton.setEnabled(true);
 				cancelButton.setEnabled(false);
 				resetButton.setEnabled(true);
+				jobProgressBar.setVisible(false);
 				devicesComboBox.setEnabled(true);
 				deviceParamsTextArea.setVisible(true);
 				deviceInfoProgressBar.setVisible(false);
@@ -236,6 +280,7 @@ public class ScreenshoterMainScreen {
 				startButton.setEnabled(false);
 				cancelButton.setEnabled(true);
 				resetButton.setEnabled(false);
+				jobProgressBar.setVisible(true);
 				devicesComboBox.setEnabled(false);
 				deviceParamsTextArea.setVisible(true);
 				deviceInfoProgressBar.setVisible(false);
@@ -245,6 +290,8 @@ public class ScreenshoterMainScreen {
 				startButton.setEnabled(false);
 				cancelButton.setEnabled(false);
 				resetButton.setEnabled(false);
+				jobProgressBar.setVisible(true);
+				updateProgress(0, 0);
 				devicesComboBox.setEnabled(false);
 				deviceParamsTextArea.setVisible(true);
 				deviceInfoProgressBar.setVisible(false);
