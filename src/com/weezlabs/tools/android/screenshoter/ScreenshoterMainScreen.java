@@ -14,6 +14,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -52,6 +54,7 @@ public class ScreenshoterMainScreen {
 	private JProgressBar jobProgressBar;
 	private MainScreenStates currentState_;
 	private JPanel coverFrame_;
+	private Map<String, List<Mode>> excludedModesMap_;
 
 	public ScreenshoterMainScreen() {
 		// TODO: add devices listener
@@ -96,11 +99,16 @@ public class ScreenshoterMainScreen {
 				if (screenShooterManager_ != null) {
 					updateProgress(0, 0);
 					setState(MainScreenStates.JOB_IN_PROGRESS);
+					List<Mode> excludedModes = modesTableModel_.getExcludedModes();
+					excludedModesMap_ = PropertiesHelper.getInstance().saveDeviceExcludes(
+							((IDevice) devicesComboBox.getSelectedItem()).getSerialNumber(),
+							excludedModes
+					);
 					screenShooterManager_.createScreenshotsForAllResolutionsAsync(
 							new File(directoryTextField.getText()),
 							prefixTextField.getText(),
 							Integer.valueOf(sleepTextField.getText()),
-							modesTableModel_.getExcludedModes(),
+							excludedModes,
 							new ScreenShooterManager.ScreenShotJobProgressListener() {
 								@Override
 								public void onScreenshotJobFinished() {
@@ -304,14 +312,28 @@ public class ScreenshoterMainScreen {
 		}
 	}
 
-	private void getDeviceInfo(@NonNull IDevice iDevice) {
+	private void getDeviceInfo(@NonNull final IDevice iDevice) {
 		ScreenShooterManager.getDeviceDisplayInfoAsync(iDevice, new ScreenShooterManager.DeviceInfoListener() {
 			@Override
 			public void onDeviceInfoUpdated(Device device) {
 				screenShooterManager_.setDevice(device);
 				deviceParamsTextArea.setText(device.getCurrentResolution().toString() + ", " + device.getCurrentDpi().toString());
 				modesTableModel_.clearRows();
-				modesTableModel_.addAll(Mode.getModesQueue(device));
+
+				if (excludedModesMap_ == null) {
+					excludedModesMap_ = PropertiesHelper.getInstance().loadDeviceExcludes();
+				}
+				List<Mode> excludedModes = excludedModesMap_.get(iDevice.getSerialNumber());
+				List<Mode> modesQueue = Mode.getModesQueue(device);
+				if (excludedModes != null) {
+					for (Mode excludedMode : excludedModes) {
+						if (modesQueue.contains(excludedMode)) {
+							modesQueue.get(modesQueue.indexOf(excludedMode)).setIsActivated(false);
+						}
+					}
+				}
+
+				modesTableModel_.addAll(modesQueue);
 				setState(checkGlobalState());
 			}
 
