@@ -18,12 +18,15 @@ import java.io.File;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
 
 /**
  * Created by vfarafonov on 12.02.2016.
@@ -48,48 +51,23 @@ public class ScreenshoterMainScreen {
 	private JTable modesTable;
 	private JProgressBar jobProgressBar;
 	private MainScreenStates currentState_;
+	private JPanel coverFrame_;
 
 	public ScreenshoterMainScreen() {
 		// TODO: add devices listener
 		setState(MainScreenStates.CONNECTING_ADB);
-		ScreenShooterManager.getInstanceAsync(new ScreenShooterManager.ManagerInitListener() {
-			@Override
-			public void onManagerReady(ScreenShooterManager manager) {
-				screenShooterManager_ = manager;
-				IDevice[] devices = screenShooterManager_.getDevices();
-				final DefaultComboBoxModel<IDevice> devicesComboBoxModel = new DefaultComboBoxModel<IDevice>(devices);
-				devicesComboBox.setModel(devicesComboBoxModel);
-				devicesListRenderer_.setAdbConnected_(true);
-				deviceInfoProgressBar.setVisible(false);
-				if (devices.length > 0) {
-					setState(MainScreenStates.REQUESTING_INFO);
-					getSelectedDeviceInfo();
-				} else {
-					setState(MainScreenStates.DEVICE_NOT_FOUND);
+		String adbPath = getAdbLocationFromManagerAndProperties();
+		if (adbPath != null) {
+			instantiateScreenshotManager(adbPath);
+		} else {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					displayAdbPicker();
 				}
-				screenShooterManager_.addDeviceChangeListener(new AndroidDebugBridge.IDeviceChangeListener() {
-					@Override
-					public void deviceConnected(IDevice iDevice) {
-					}
+			});
+		}
 
-					@Override
-					public void deviceDisconnected(IDevice iDevice) {
-						devicesComboBoxModel.removeElement(iDevice);
-						setState(checkGlobalState());
-					}
-
-					@Override
-					public void deviceChanged(IDevice iDevice, int i) {
-						if (iDevice.getState() == IDevice.DeviceState.ONLINE) {
-							devicesComboBoxModel.addElement(iDevice);
-						} else {
-							devicesComboBoxModel.removeElement(iDevice);
-						}
-						setState(checkGlobalState());
-					}
-				});
-			}
-		});
 		devicesListRenderer_ = new DevicesListRenderer();
 		devicesComboBox.setRenderer(devicesListRenderer_);
 		devicesComboBox.setMaximumRowCount(MAX_DEVICES_ROW_COUNT);
@@ -169,6 +147,128 @@ public class ScreenshoterMainScreen {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
 		frame.setVisible(true);
+	}
+
+	/**
+	 * Tries to find adb in system environment (ANDROID_HOME) or if it was specified with last launch
+	 */
+	private String getAdbLocationFromManagerAndProperties() {
+		String path = ScreenShooterManager.getSystemAdbLocation();
+		if (path != null && ScreenShooterManager.checkForAdbInPath(path)) {
+			return path;
+		} else {
+			path = PropertiesHelper.getInstance().getAdbPath();
+			if (path != null) {
+				if (ScreenShooterManager.checkForAdbInPath(path)) {
+					return path;
+				} else {
+					PropertiesHelper.getInstance().saveAdbPath(null);
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Displays file picker dialog. Shows layout with button to find adb if cancelled
+	 */
+	private void displayAdbPicker() {
+		JFileChooser adbFileChooser = new JFileChooser();
+		adbFileChooser.setFileFilter(new FileFilter() {
+			@Override
+			public boolean accept(File f) {
+				if (f.isDirectory()) {
+					return true;
+				}
+				String nameWithoutExtension = f.getName();
+				int lastDotIndex = nameWithoutExtension.lastIndexOf(".");
+				if (lastDotIndex != -1) {
+					nameWithoutExtension = nameWithoutExtension.substring(0, lastDotIndex);
+				}
+				return nameWithoutExtension.equalsIgnoreCase("adb");
+			}
+
+			@Override
+			public String getDescription() {
+				return "Adb executable";
+			}
+		});
+		int returnValue = adbFileChooser.showDialog(ScreenshoterRootPanel, "Pick ADB location");
+		if (returnValue == JFileChooser.APPROVE_OPTION) {
+			System.out.println("Selected: " + adbFileChooser.getSelectedFile().getAbsolutePath());
+			if (coverFrame_ != null) {
+				ScreenshoterRootPanel.setVisible(true);
+				ScreenshoterRootPanel.getParent().remove(coverFrame_);
+				coverFrame_ = null;
+			}
+			String adbPath = adbFileChooser.getSelectedFile().getAbsolutePath();
+			if (ScreenShooterManager.checkForAdbInPath(adbPath)) {
+				PropertiesHelper.getInstance().saveAdbPath(adbPath);
+				instantiateScreenshotManager(adbPath);
+			} else {
+				displayAdbPicker();
+			}
+		} else {
+			if (coverFrame_ == null) {
+				coverFrame_ = new JPanel();
+				coverFrame_.setSize(ScreenshoterRootPanel.getSize());
+				coverFrame_.setBackground(ScreenshoterRootPanel.getBackground());
+				JButton button = new JButton("Adb not found. Click me to find it");
+				button.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						displayAdbPicker();
+					}
+				});
+				coverFrame_.add(button);
+				coverFrame_.setVisible(true);
+				ScreenshoterRootPanel.getParent().add(coverFrame_);
+				ScreenshoterRootPanel.setVisible(false);
+			}
+		}
+	}
+
+	private void instantiateScreenshotManager(String adbPath) {
+		ScreenShooterManager.getInstanceAsync(adbPath,
+				new ScreenShooterManager.ManagerInitListener() {
+					@Override
+					public void onManagerReady(ScreenShooterManager manager) {
+						screenShooterManager_ = manager;
+						IDevice[] devices = screenShooterManager_.getDevices();
+						final DefaultComboBoxModel<IDevice> devicesComboBoxModel = new DefaultComboBoxModel<IDevice>(devices);
+						devicesComboBox.setModel(devicesComboBoxModel);
+						devicesListRenderer_.setAdbConnected_(true);
+						deviceInfoProgressBar.setVisible(false);
+						if (devices.length > 0) {
+							setState(MainScreenStates.REQUESTING_INFO);
+							getSelectedDeviceInfo();
+						} else {
+							setState(MainScreenStates.DEVICE_NOT_FOUND);
+						}
+						screenShooterManager_.addDeviceChangeListener(new AndroidDebugBridge.IDeviceChangeListener() {
+							@Override
+							public void deviceConnected(IDevice iDevice) {
+							}
+
+							@Override
+							public void deviceDisconnected(IDevice iDevice) {
+								devicesComboBoxModel.removeElement(iDevice);
+								setState(checkGlobalState());
+							}
+
+							@Override
+							public void deviceChanged(IDevice iDevice, int i) {
+								if (iDevice.getState() == IDevice.DeviceState.ONLINE) {
+									devicesComboBoxModel.addElement(iDevice);
+								} else {
+									devicesComboBoxModel.removeElement(iDevice);
+								}
+								setState(checkGlobalState());
+							}
+						});
+					}
+				}
+		);
 	}
 
 	/**
