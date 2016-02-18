@@ -4,6 +4,7 @@ import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
 import com.sun.javafx.beans.annotations.NonNull;
 import com.weezlabs.libs.screenshoter.ScreenShooterManager;
+import com.weezlabs.libs.screenshoter.adb.DeviceShellHelper;
 import com.weezlabs.libs.screenshoter.model.Device;
 import com.weezlabs.libs.screenshoter.model.Mode;
 import com.weezlabs.tools.android.screenshoter.ui.DevicesListRenderer;
@@ -313,11 +314,11 @@ public class ScreenshoterMainScreen {
 	}
 
 	private void getDeviceInfo(@NonNull final IDevice iDevice) {
-		ScreenShooterManager.getDeviceDisplayInfoAsync(iDevice, new ScreenShooterManager.DeviceInfoListener() {
+		ScreenShooterManager.getDeviceDisplayInfoAsync(iDevice, new DeviceShellHelper.DeviceInfoListener() {
 			@Override
 			public void onDeviceInfoUpdated(Device device) {
 				screenShooterManager_.setDevice(device);
-				deviceParamsTextArea.setText(device.getCurrentResolution().toString() + ", " + device.getCurrentDpi().toString());
+				deviceParamsTextArea.setText(device.getPhysicalResolution().toString() + ", " + device.getPhysicalDpi().toString());
 				modesTableModel_.clearRows();
 
 				if (excludedModesMap_ == null) {
