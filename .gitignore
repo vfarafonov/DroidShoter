@@ -44,3 +44,6 @@ fabric.properties
 
 #Default screenshots output
 /screenshots/
+
+#ScreenShoter properties
+config.properties

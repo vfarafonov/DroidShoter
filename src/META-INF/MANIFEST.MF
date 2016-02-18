@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Main-Class: com.weezlabs.tools.android.screenshoter.ScreenshoterMainSc
+ reen
+Name: WeezLabs/ScreenShoter/
+Specification-Title: ScreenShoter
+Specification-Version: 1.0
+Implementation-Version: 1.0
