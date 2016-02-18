@@ -151,7 +151,7 @@ public class ScreenshoterMainScreen {
 	}
 
 	public static void main(String[] args) {
-		JFrame frame = new JFrame("ScreenshoterMainScreen");
+		JFrame frame = new JFrame("ScreenShoter");
 		frame.setContentPane(new ScreenshoterMainScreen().ScreenshoterRootPanel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
