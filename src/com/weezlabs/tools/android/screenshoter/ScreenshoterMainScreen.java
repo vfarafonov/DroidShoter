@@ -10,19 +10,28 @@ import com.weezlabs.libs.screenshoter.model.Mode;
 import com.weezlabs.tools.android.screenshoter.ui.DevicesListRenderer;
 import com.weezlabs.tools.android.screenshoter.ui.ModesTableModel;
 
+import java.awt.Desktop;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTable;
@@ -36,6 +45,7 @@ import javax.swing.filechooser.FileFilter;
  */
 public class ScreenshoterMainScreen {
 	public static final int MAX_DEVICES_ROW_COUNT = 10;
+	private static final java.lang.String HELP_LINK = "https://github.com/vfarafonov/DroidShoter";
 	private final DevicesListRenderer devicesListRenderer_;
 	private final ModesTableModel modesTableModel_;
 
@@ -53,6 +63,7 @@ public class ScreenshoterMainScreen {
 	private JTextArea deviceParamsTextArea;
 	private JTable modesTable;
 	private JProgressBar jobProgressBar;
+	private JLabel helpLabel;
 	private MainScreenStates currentState_;
 	private JPanel coverFrame_;
 	private Map<String, List<Mode>> excludedModesMap_;
@@ -148,14 +159,41 @@ public class ScreenshoterMainScreen {
 				resetDeviceDisplay();
 			}
 		});
+		helpLabel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+				if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+					try {
+						desktop.browse(new URI(HELP_LINK));
+					} catch (Exception exc) {
+						exc.printStackTrace();
+					}
+				}
+			}
+		});
 	}
 
 	public static void main(String[] args) {
-		JFrame frame = new JFrame("ScreenShoter");
+		JFrame frame = new JFrame("DroidShoter");
+		frame.setIconImages(getIconsList(frame.getClass()));
 		frame.setContentPane(new ScreenshoterMainScreen().ScreenshoterRootPanel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
 		frame.setVisible(true);
+	}
+
+	private static ArrayList<Image> getIconsList(Class<?> aClass) {
+		ArrayList<Image> iconsList = new ArrayList<>();
+		try {
+			iconsList.add(ImageIO.read(aClass.getResource("/res/images/icon_128.png")));
+			iconsList.add(ImageIO.read(aClass.getResource("/res/images/icon_64.png")));
+			iconsList.add(ImageIO.read(aClass.getResource("/res/images/icon_32.png")));
+			iconsList.add(ImageIO.read(aClass.getResource("/res/images/icon_16.png")));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return iconsList;
 	}
 
 	/**
