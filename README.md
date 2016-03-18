@@ -49,6 +49,8 @@ Download the latest version from the [releases](https://github.com/vfarafonov/Dr
 
 ### Known issues
 
+-   **!!!** Be carefull when using DroidShoter with a **Samsung Tab S (SM-T700), Android 5.0.2**. I have a report that the device was rebooted in the middle of the job and could not be started until it was hard resetted. 
+
 -   May have some troubles with picking up default display parameters for some devices with Android older than 4.3. In this case you will not be able to start the job unfortunately.
 
 -   System UI (status bar and bottom buttons layout) may have a wrong size after changing the display parameters. Can't do anything here.
