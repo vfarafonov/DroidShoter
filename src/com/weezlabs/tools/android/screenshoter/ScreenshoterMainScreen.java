@@ -64,6 +64,9 @@ public class ScreenshoterMainScreen {
 	private JTable modesTable;
 	private JProgressBar jobProgressBar;
 	private JLabel helpLabel;
+	private JButton addModeButton;
+	private JButton loadModesButton;
+	private JButton saveModesButtons;
 	private MainScreenStates currentState_;
 	private JPanel coverFrame_;
 	private Map<String, List<Mode>> excludedModesMap_;
@@ -379,7 +382,7 @@ public class ScreenshoterMainScreen {
 			@Override
 			public void onDeviceUpdateFailed(IDevice iDevice, Exception e) {
 				deviceParamsTextArea.setText("Failed to get device parameters");
-				setState(checkGlobalState());
+				setState(MainScreenStates.DEVICE_PARAMS_UNKNOWN);
 			}
 		});
 	}
@@ -407,6 +410,7 @@ public class ScreenshoterMainScreen {
 				devicesComboBox.setEnabled(false);
 				deviceParamsTextArea.setVisible(false);
 				deviceInfoProgressBar.setVisible(true);
+				addModeButton.setEnabled(false);
 				break;
 			case DEVICE_NOT_FOUND:
 				startButton.setEnabled(false);
@@ -417,6 +421,7 @@ public class ScreenshoterMainScreen {
 				devicesComboBox.setEnabled(false);
 				deviceParamsTextArea.setVisible(false);
 				deviceInfoProgressBar.setVisible(false);
+				addModeButton.setEnabled(false);
 				break;
 			case REQUESTING_INFO:
 				startButton.setEnabled(false);
@@ -427,6 +432,7 @@ public class ScreenshoterMainScreen {
 				devicesComboBox.setEnabled(false);
 				deviceParamsTextArea.setVisible(false);
 				deviceInfoProgressBar.setVisible(true);
+				addModeButton.setEnabled(false);
 				break;
 			case READY:
 				startButton.setEnabled(true);
@@ -436,6 +442,7 @@ public class ScreenshoterMainScreen {
 				devicesComboBox.setEnabled(true);
 				deviceParamsTextArea.setVisible(true);
 				deviceInfoProgressBar.setVisible(false);
+				addModeButton.setEnabled(true);
 				break;
 			case JOB_IN_PROGRESS:
 				startButton.setEnabled(false);
@@ -445,6 +452,18 @@ public class ScreenshoterMainScreen {
 				devicesComboBox.setEnabled(false);
 				deviceParamsTextArea.setVisible(true);
 				deviceInfoProgressBar.setVisible(false);
+				addModeButton.setEnabled(false);
+				break;
+			case DEVICE_PARAMS_UNKNOWN:
+				startButton.setEnabled(false);
+				cancelButton.setEnabled(false);
+				resetButton.setEnabled(true);
+				modesTableModel_.clearRows();
+				jobProgressBar.setVisible(false);
+				devicesComboBox.setEnabled(true);
+				deviceParamsTextArea.setVisible(true);
+				deviceInfoProgressBar.setVisible(false);
+				addModeButton.setEnabled(false);
 				break;
 			case CANCELLING_JOB:
 			case RESETTING:
@@ -456,11 +475,12 @@ public class ScreenshoterMainScreen {
 				devicesComboBox.setEnabled(false);
 				deviceParamsTextArea.setVisible(true);
 				deviceInfoProgressBar.setVisible(false);
+				addModeButton.setEnabled(false);
 				break;
 		}
 	}
 
 	public enum MainScreenStates {
-		CONNECTING_ADB, DEVICE_NOT_FOUND, REQUESTING_INFO, JOB_IN_PROGRESS, CANCELLING_JOB, RESETTING, READY
+		CONNECTING_ADB, DEVICE_NOT_FOUND, REQUESTING_INFO, JOB_IN_PROGRESS, CANCELLING_JOB, RESETTING, READY, DEVICE_PARAMS_UNKNOWN
 	}
 }
