@@ -4,9 +4,13 @@
     <root id="archive" name="ScreenshoterJar.jar">
       <element id="module-output" name="ScreenshoterJar" />
       <element id="module-output" name="ScreenshoterLib" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/ScreenshoterLib/libs/ddmlib.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/ScreenshoterLib/libs/guava-19.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/ScreenshoterLib/libs/annotations.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/ScreenshoterLib/libs/common.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/ScreenshoterLib/libs/kxml2-2.3.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/gson-2.6.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/guava-19.0.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/ScreenshoterLib/libs/ddmlib.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
