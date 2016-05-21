@@ -49,6 +49,8 @@ Download the latest version from the [releases](https://github.com/vfarafonov/Dr
 
 ### Known issues
 
+-   **!!!** Be carefull when using DroidShoter with a **Samsung Tab S (SM-T700), Android 5.0.2**. I have a report that the device was rebooted in the middle of the job and could not be started until it was hard resetted. 
+
 -   May have some troubles with picking up default display parameters for some devices with Android older than 4.3. In this case you will not be able to start the job unfortunately.
 
 -   System UI (status bar and bottom buttons layout) may have a wrong size after changing the display parameters. Can't do anything here.
@@ -74,3 +76,18 @@ Feel free to create [issues on Github](https://github.com/vfarafonov/DroidShoter
 <img src="readme_screenshots/output_480x854_MDPI.png" height="200">
 <img src="readme_screenshots/output_720x1280_XHDPI.png" height="200">
 <img src="readme_screenshots/output_1200x1920_MDPI.png" height="200">
+
+License
+=======
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.

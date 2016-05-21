@@ -460,6 +460,10 @@ public class ScreenshoterMainScreen {
 		}
 	}
 
+	private void createUIComponents() {
+		// Required to avoid crashes on OS X (NPE at $$$setupUI$$$)
+	}
+
 	public enum MainScreenStates {
 		CONNECTING_ADB, DEVICE_NOT_FOUND, REQUESTING_INFO, JOB_IN_PROGRESS, CANCELLING_JOB, RESETTING, READY
 	}
