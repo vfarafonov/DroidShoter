@@ -5,8 +5,10 @@ import com.android.ddmlib.IDevice;
 import com.sun.javafx.beans.annotations.NonNull;
 import com.weezlabs.libs.screenshoter.ScreenShooterManager;
 import com.weezlabs.libs.screenshoter.adb.DeviceShellHelper;
+import com.weezlabs.libs.screenshoter.model.Density;
 import com.weezlabs.libs.screenshoter.model.Device;
 import com.weezlabs.libs.screenshoter.model.Mode;
+import com.weezlabs.libs.screenshoter.model.Resolution;
 import com.weezlabs.tools.android.screenshoter.ui.DevicesListRenderer;
 import com.weezlabs.tools.android.screenshoter.ui.ModesTableModel;
 
@@ -173,6 +175,13 @@ public class ScreenshoterMainScreen {
 						exc.printStackTrace();
 					}
 				}
+			}
+		});
+		addModeButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO: Display dialog with mode creation here
+				modesTableModel_.add(new Mode(new Resolution(600, 400, null, null), new Density(300)));
 			}
 		});
 	}
@@ -366,7 +375,7 @@ public class ScreenshoterMainScreen {
 					excludedModesMap_ = PropertiesHelper.getInstance().loadDeviceExcludes();
 				}
 				List<Mode> excludedModes = excludedModesMap_.get(iDevice.getSerialNumber());
-				List<Mode> modesQueue = Mode.getModesQueue(device);
+				List<Mode> modesQueue = Mode.getDefaultModesQueue(device);
 				if (excludedModes != null) {
 					for (Mode excludedMode : excludedModes) {
 						if (modesQueue.contains(excludedMode)) {
